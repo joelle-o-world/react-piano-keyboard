@@ -1,6 +1,7 @@
-import React from 'react';
+import React, {useContext, useState} from 'react';
 import {FunctionComponent, useEffect, createContext} from 'react';
 import classNames from 'classnames';
+import {keyNames, flatKeyNames, octaveOf, pitchClassOf, isBlackNote} from '../pitch';
 
 import './PianoKeyboard.sass';
 
@@ -11,6 +12,16 @@ interface PianoKeyboardKeyPositions {
     left: number;
     top: number;
     width: number;
+    deepness: number;
+    bottom: number;
+    inner: {
+      top: number;
+      left: number;
+      width: number;
+      height: number;
+      bottom: number;
+      center: {x:number, y:number}
+    }
   }
 }
 
@@ -18,18 +29,15 @@ export const PianoKeyboardContext = createContext({
   keyPositions: {} as PianoKeyboardKeyPositions,
 })
 
-const keyNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
-const flatKeyNames = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B']
+export const useKeyPosition = (pitch: number) => {
+  let {keyPositions} = useContext(PianoKeyboardContext)
+
+  return keyPositions[pitch] || null;
+}
+
 export const basicHotKeys = ['a','w','s','e','d','f','t','g','y','h','u','j','k','o','l', 'p', ';'];
 export const defaultHotKeys:string[] = [];
 
-const octaveOf = (p: number) => Math.floor(p / 12);
-const pitchClassOf = (p: number, twelve=12) => {
-  while(p < 0)
-    p += twelve;
-  return p%twelve
-}
-const isBlackNote = (p: number) => [1,3,6,8,10].includes(pitchClassOf(p))
 
 export const PianoKeyboard: FunctionComponent<{
   numberOfKeys?: number;
@@ -49,6 +57,10 @@ export const PianoKeyboard: FunctionComponent<{
 
   whiteKeyHeight?: number;
   blackKeyHeight?: number;
+  // The height of the border-bottom property of the white keys to give the illusion of depth.
+  whiteKeyDeepness?: number;
+  // The height of the border-bottom property of the black keys to give the illusion of depth.
+  blackKeyDeepness?: number;
 
   /// Called when the user clicks on a key or presses an associated hot key
   onNote?: (e:{
@@ -70,8 +82,12 @@ export const PianoKeyboard: FunctionComponent<{
   blackKeyWidth=30,
   whiteKeyHeight=200,
   blackKeyHeight=100,
+  whiteKeyDeepness=30,
+  blackKeyDeepness=15,
   children,
 }) => {
+
+
   useEffect( () => {
     const handleKeyDown = (e: any) => {
       if(hotKeys.includes(e.key)) {
@@ -109,13 +125,32 @@ export const PianoKeyboard: FunctionComponent<{
         : whiteKeyWidth/2
       let black = isBlackNote(pc);
       let width = black ? blackKeyWidth : whiteKeyWidth;
-      let height = black ? blackKeyHeight : whiteKeyHeight;
+      let left = x - width/2;
+      let innerTop = black ? 0 : blackKeyHeight;
+      let innerHeight = black 
+        ? (whiteKeyHeight - blackKeyDeepness) 
+        : (whiteKeyHeight-blackKeyHeight-whiteKeyDeepness)
       positions[p] = {
         x,
         top: 0,
         width,
-        height,
-        left: x - width/2,
+        height:black ? blackKeyHeight : whiteKeyHeight,
+        left,
+        deepness: black ? blackKeyDeepness : whiteKeyDeepness,
+        bottom: black ? (whiteKeyHeight - blackKeyHeight) : 0,
+        inner: {
+          top: innerTop,
+          left,
+          height: innerHeight,
+          width,
+          bottom: black
+            ? whiteKeyHeight - blackKeyHeight + blackKeyDeepness
+            : whiteKeyDeepness,
+          center: {
+            x: left + width/2,
+            y: innerTop + innerHeight / 2
+          },
+        }
       };
     }
     return positions;
@@ -152,7 +187,7 @@ export const PianoKeyboard: FunctionComponent<{
       }
     );
 
-    const {left, width, top, height} = keyPositions[pitch];
+    const {left, width, top, height, deepness} = keyPositions[pitch];
 
     const btn = <div 
       onMouseDown={handlePress} 
@@ -163,13 +198,14 @@ export const PianoKeyboard: FunctionComponent<{
         width: width+'px',
         top: `${top}px`,
         height: `${height}px`,
+        borderBottomWidth: (deepness)+'px',
       }}
     >{labelKeys ? fullName : (hotKey || ' ')}</div>
 
     keys.push(btn)
   }
 
-  return <div className='PianoKeyboard'>
+  return <div className='PianoKeyboard' style={{height: whiteKeyHeight+'px'}}>
     <div className="PianoKeyboardKeys">
       {keys}
     </div>

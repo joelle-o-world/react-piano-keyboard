@@ -13,6 +13,14 @@ $white-key-spacing: 1px
 .PianoKeyboard
   position: relative
     
+  .PianoKeyboardOverlay
+    position: absolute
+    pointer-events: none
+    left: 0px
+    right: 0px
+    top: 0px
+    bottom: 0px
+    z-index: 3
   .PianoKeyboardKey
     position: absolute
     box-sizing: border-box
@@ -30,7 +38,7 @@ $white-key-spacing: 1px
     font-family: monospace
 
   .PianoKeyboardKey.PianoKeyboardWhiteKey
-    z-index: 119
+    z-index: 1
     color: #999
     //width: $w - $white-key-spacing 
     box-sizing: border-box
@@ -47,7 +55,7 @@ $white-key-spacing: 1px
       border-bottom: 5px solid #eee
 
   .PianoKeyboardKey.PianoKeyboardBlackKey
-    z-index: 120
+    z-index: 2
     pointer-events: auto
     box-sizing: border-box
     //width: $b 
@@ -55,7 +63,7 @@ $white-key-spacing: 1px
     background-color: black
     color: white
 
-    border-bottom: 15px solid #222
+    border-bottom-color: 15px solid #222
     border-left: 4px solid #444
     border-right: 4px solid #444
     border-top: 1px solid transparent
