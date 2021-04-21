@@ -4,7 +4,7 @@ import PianoKeyboard from './components/PianoKeyboard';
 function App() {
   return (
     <div className="App">
-      <PianoKeyboard/>
+      <PianoKeyboard lowestNote={3} labelKeys/>
     </div>
   );
 }

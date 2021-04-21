@@ -11,11 +11,11 @@ $white-key-spacing: 1px
   border-color: #600
 
 .PianoKeyboard
-
-  .key
-
+  position: relative
+    
+  .PianoKeyboardKey
+    position: absolute
     box-sizing: border-box
-
     outline: none
     user-select: none
     -moz-user-select: none
@@ -23,70 +23,48 @@ $white-key-spacing: 1px
     -webkit-user-select: none
     io-user-select: none
     display: flex
-
     align-items: center
     justify-content: flex-end
     flex-direction: column
     cursor: pointer
     font-family: monospace
 
-
-
-  .white-keys
-    display: flex
+  .PianoKeyboardKey.PianoKeyboardWhiteKey
     z-index: 119
     color: #999
-    .key
-      flex-shrink: 0
-      width: $w - $white-key-spacing 
-      box-sizing: border-box
-      background-color: white
-      height: $h
-      margin-right: $white-key-spacing
-      border-bottom: 30px solid #eee
-      box-shadow: 0px 0px 1px black
-      transition: border-bottom .1s, background-color .1s
-      &.highlighted
-        @include HighlightedKey
-      &:hover
-        border-bottom: 50px solid #eee
+    //width: $w - $white-key-spacing 
+    box-sizing: border-box
+    background-color: white
+    border-bottom: 30px solid #eee
+    box-shadow: 0px 0px 1px black
+    transition: border-bottom .1s, background-color .1s
+    &.highlighted
+      @include HighlightedKey
+    &:hover
+      border-bottom: 50px solid #eee
 
-      &:active
-        border-bottom: 5px solid #eee
-  .black-keys
-    display: flex
-    position: absolute
+    &:active
+      border-bottom: 5px solid #eee
+
+  .PianoKeyboardKey.PianoKeyboardBlackKey
     z-index: 120
-    pointer-events: none
-    .key
-      pointer-events: auto
-      box-sizing: border-box
-      width: $b 
-      font-size: 12px
-      height: $h / 2
-      margin-left: $w - $b
-      background-color: black
-      color: white
-      flex-shrink: 0
+    pointer-events: auto
+    box-sizing: border-box
+    //width: $b 
+    font-size: 12px
+    background-color: black
+    color: white
 
-      border-bottom: 15px solid #222
-      border-left: 4px solid #444
-      border-right: 4px solid #444
-      border-top: 1px solid transparent
+    border-bottom: 15px solid #222
+    border-left: 4px solid #444
+    border-right: 4px solid #444
+    border-top: 1px solid transparent
 
-      &.highlighted
-        @include HighlightedKey
+    &.highlighted
+      @include HighlightedKey
 
-      transition: border-bottom .1s, background-color .1s
-      &:hover
-        border-bottom: 30px solid #222
-      &:active
-        border-bottom: 1px solid #222
-
-      &.Db
-        margin-left: $w - $b/2
-      &.Eb
-        margin-right: $w
-      &.Bb
-        margin-right: $w - $b/2
-
+    transition: border-bottom .1s, background-color .1s
+    &:hover
+      border-bottom: 30px solid #222
+    &:active
+      border-bottom: 1px solid #222
