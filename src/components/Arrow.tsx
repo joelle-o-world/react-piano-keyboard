@@ -60,16 +60,23 @@ export interface SVGArrowProps {
   pointRatio?: number;
   maxPointLength?: number;
   joinWidth?: number;
+  controlX?: number;
+  controlY?: number;
+  curve?: number;
 }
 
-export const SVGArrow:FunctionComponent<SVGArrowProps> = ({
-  x1, y1, x2, y2,
-  endWidth=10,
-  pointWidth=20,
-  maxPointLength=40,
-  pointRatio= .25,
-  joinWidth=5,
-}) => {
+export const SVGArrow:FunctionComponent<SVGArrowProps> = (props) => {
+  const {
+    x1, y1, x2, y2,
+    endWidth=10,
+    pointWidth=20,
+    maxPointLength=40,
+    pointRatio= .25,
+    joinWidth=5,
+    curve = 10,
+  } = props
+
+
   let mag = Math.sqrt(sq(x1-x2) + sq(y1-y2))
   const pointLength = Math.min(maxPointLength, pointRatio * mag);
   let dir = {
@@ -77,6 +84,11 @@ export const SVGArrow:FunctionComponent<SVGArrowProps> = ({
     y: (y2 - y1) / mag,
   }
   let norm = perp(dir);
+
+  const {
+    controlX = (x1+x2)/2 + curve * norm.x,
+    controlY = (y1+y2)/2 + curve * norm.y,
+  } = props;
 
   let end1 = {
     x: x1 + norm.x * endWidth,
@@ -108,21 +120,11 @@ export const SVGArrow:FunctionComponent<SVGArrowProps> = ({
   }
   let point = {x: x2, y: y2};
 
-  const points = stringifyPoints(
-    point,
-    head1,
-    join1,
-    end1,
-    end2,
-    join2,
-    head2,
-    point,
-  )
-  
+  const path = `M ${point.x} ${point.y} L ${head1.x} ${head1.y} L ${join1.x} ${join1.y} Q ${controlX} ${controlY} ${end1.x} ${end1.y} L ${end2.x} ${end2.y} Q ${controlX} ${controlY} ${join2.x} ${join2.y} L ${head2.x} ${head2.y} Z`;
 
   return <g>
     <line x1={end1.x} y1={end1.y} x2={end2.x} y2={end2.y} />
     <line x1={x1} y1={y1} x2={x2} y2={y2} />
-    <polygon points={points} />
+    <path d={path} />
   </g>
 }
